@@ -1,5 +1,5 @@
 <template>
-   <div class="flex flex-col container mx-auto">
+   <div class="flex flex-col container mx-auto px-5">
       <h1 class="text-3xl font-bold mb-5">Notas</h1>
       <div v-show="elementVisible" class="alerta">
          <div v-if="alertOpen"
@@ -75,20 +75,6 @@
                               tracking-wider
                            "
                         >
-                           ID
-                        </th>
-                        <th
-                           scope="col"
-                           class="
-                              px-6
-                              py-3
-                              text-left text-xs
-                              font-medium
-                              text-gray-500
-                              uppercase
-                              tracking-wider
-                           "
-                        >
                            Nombre
                         </th>
                         <th
@@ -123,22 +109,6 @@
                   </thead>
                   <tbody class="bg-white divide-y divide-gray-200">
                      <tr v-for="(nota, index) in notas" :key="index">
-                        <td class="px-6 py-4 whitespace-nowrap">
-                           <span
-                              class="
-                                 px-2
-                                 inline-flex
-                                 text-xs
-                                 leading-5
-                                 font-semibold
-                                 rounded-full
-                                 bg-green-100
-                                 text-green-800
-                              "
-                           >
-                              {{ nota._id }}
-                           </span>
-                        </td>
                         <td
                            class="
                               px-6
@@ -182,6 +152,8 @@
 </template>
 
 <script>
+import {mapState} from 'vuex';
+
 export default {
    components:{
       
@@ -199,12 +171,22 @@ export default {
          notaEditar: {}
       }
    },
+   computed: {
+      ...mapState(['token'])
+   },
    created(){
       this.listarNotas()
    },
    methods: {
       listarNotas(){
-         this.axios.get('/notas')
+
+         let config = {
+            headers: {
+               token: this.token
+            }
+         }
+
+         this.axios.get('/notas', config)
             .then(res => {
                console.log(res.data);
                this.notas = res.data
@@ -217,8 +199,15 @@ export default {
          this.alertOpen = false;
       },
       agregarNota(){
+
+         let config = {
+            headers: {
+               token: this.token
+            }
+         }
+
          //console.log(this.nota);
-         this.axios.post('/nueva-nota', this.nota)
+         this.axios.post('/nueva-nota', this.nota, config)
             .then(res => {
                this.notas.push(res.data)
                
